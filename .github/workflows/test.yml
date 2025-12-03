@@ -106,8 +106,8 @@ jobs:
         with:
           push: true
           tags: |
-            ab2609/hw12:latest
-            ab2609/hw12:${{ github.sha }}
+            ab2609/hw13:latest
+            ab2609/hw13:${{ github.sha }}
           platforms: linux/amd64,linux/arm64
-          cache-from: type=registry,ref=aab2609/hw12:cache
+          cache-from: type=registry,ref=ab2609/hw13:cache
           cache-to: type=inline,mode=max

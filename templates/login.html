@@ -2,71 +2,55 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Login</title>
-
+    <title>Login</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
-        label { display: block; margin-top: 15px; }
-        input { width: 100%; padding: 10px; margin-top: 5px; }
-        button { padding: 10px 20px; margin-top: 20px; cursor: pointer; }
-        .error { color: red; margin-top: 10px; }
-        .success { color: green; margin-top: 10px; }
+        body { font-family: Arial; text-align: center; margin-top: 40px; }
+        input { padding: 8px; margin: 6px; width: 250px; }
+        button { padding: 10px 20px; cursor: pointer; margin-top: 10px; }
+        #message { margin-top: 15px; font-weight: bold; }
     </style>
 </head>
-
 <body>
-    <h1>Login</h1>
 
-    <form id="loginForm">
-        <label>Email or Username</label>
-        <input type="text" id="username" required>
+<h1>Login</h1>
 
-        <label>Password</label>
-        <input type="password" id="password" required>
+<input id="username" type="text" placeholder="Username"><br>
+<input id="password" type="password" placeholder="Password"><br>
 
-        <button type="submit">Login</button>
-    </form>
+<button id="loginBtn">Login</button>
 
-    <div id="message"></div>
+<div id="message"></div>
 
-    <script>
-        const form = document.getElementById("loginForm");
-        const message = document.getElementById("message");
+<script>
+    document.getElementById("loginBtn").onclick = async function () {
+        const username = document.getElementById("username").value;
+        const pass = document.getElementById("password").value;
 
-        form.addEventListener("submit", async function (e) {
-            e.preventDefault();
+        const msg = document.getElementById("message");
 
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
+        try {
+            const response = await fetch("/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: username,
+                    password: pass
+                })
+            });
 
-            message.innerHTML = "";
+            const data = await response.json();
 
-            const payload = { username, password };
-
-            try {
-                const response = await fetch("/auth/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    message.innerHTML = `<p class='error'>${data.detail}</p>`;
-                    return;
-                }
-
-                // Save JWT
-                localStorage.setItem("token", data.access_token);
-
-                message.innerHTML = "<p class='success'>Login successful!</p>";
-
-            } catch (err) {
-                message.innerHTML = "<p class='error'>Something went wrong.</p>";
+            if (response.ok) {
+                msg.innerText = "Login successful";
+            } else {
+                msg.innerText = data.detail || "Invalid username or password";
             }
-        });
-    </script>
+
+        } catch (err) {
+            msg.innerText = err.message;
+        }
+    };
+</script>
 
 </body>
 </html>
