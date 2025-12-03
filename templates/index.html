@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World & Calculator Demo</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        nav {
+            margin-bottom: 30px;
+        }
+
+        nav a {
+            margin: 0 15px;
+            font-size: 18px;
+            text-decoration: none;
+            color: #0077cc;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .calculator {
+            margin-top: 20px;
+        }
+
+        input {
+            margin: 5px;
+            padding: 8px;
+            width: 180px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 6px 12px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .result {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Hello World</h1>
+
+    <!-- 🔥 NEW: Navigation Bar (Login + Register) -->
+    <nav>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+    </nav>
+
+    <div class="calculator">
+        <h2>Calculator</h2>
+
+        <input type="number" id="a" placeholder="First number">
+        <input type="number" id="b" placeholder="Second number"><br>
+
+        <button onclick="calculate('add')">Add</button>
+        <button onclick="calculate('subtract')">Subtract</button>
+        <button onclick="calculate('multiply')">Multiply</button>
+        <button onclick="calculate('divide')">Divide</button>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        async function calculate(operation) {
+            const a = parseFloat(document.getElementById('a').value);
+            const b = parseFloat(document.getElementById('b').value);
+            const resultElement = document.getElementById('result');
+
+            try {
+                const response = await fetch('/' + operation, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ a, b })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultElement.innerText = 'Result: ' + data.result;
+                } else {
+                    resultElement.innerText = 'Error: ' + data.error;
+                }
+
+            } catch (err) {
+                resultElement.innerText = 'Error: ' + err.message;
+            }
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration</title>
+
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
+        label { display: block; margin-top: 15px; }
+        input { width: 100%; padding: 10px; margin-top: 5px; }
+        button { padding: 10px 20px; margin-top: 20px; cursor: pointer; }
+        .error { color: red; margin-top: 10px; }
+        .success { color: green; margin-top: 10px; }
+    </style>
+</head>
+
+<body>
+    <h1>Register</h1>
+
+    <form id="registerForm">
+        <label>Email</label>
+        <input type="email" id="email" required>
+
+        <label>Username</label>
+        <input type="text" id="username" required>
+
+        <label>First Name</label>
+        <input type="text" id="firstName" required>
+
+        <label>Last Name</label>
+        <input type="text" id="lastName" required>
+
+        <label>Password</label>
+        <input type="password" id="password" minlength="6" required>
+
+        <label>Confirm Password</label>
+        <input type="password" id="confirmPassword" required>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <div id="message"></div>
+
+    <script>
+        const form = document.getElementById("registerForm");
+        const message = document.getElementById("message");
+
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            // Client-side checks
+            const email = document.getElementById("email").value;
+            const username = document.getElementById("username").value;
+            const first_name = document.getElementById("firstName").value;
+            const last_name = document.getElementById("lastName").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            message.innerHTML = "";
+
+            if (password !== confirmPassword) {
+                message.innerHTML = "<p class='error'>Passwords do not match</p>";
+                return;
+            }
+
+            const payload = {
+                email,
+                username,
+                first_name,
+                last_name,
+                password
+            };
+
+            try {
+                const response = await fetch("/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    message.innerHTML = `<p class='error'>${data.detail}</p>`;
+                    return;
+                }
+
+                message.innerHTML = "<p class='success'>Registration successful!</p>";
+
+                // Save JWT
+                localStorage.setItem("token", data.access_token);
+
+            } catch (err) {
+                message.innerHTML = "<p class='error'>Something went wrong.</p>";
+            }
+        });
+    </script>
+
+</body>
+</html>
